@@ -41,3 +41,6 @@ sudo systemctl restart docker
 
 # Enable docker to start on boot
 sudo systemctl enable docker
+
+# Add my user to the docker group
+sudo usermod -aG docker healem
