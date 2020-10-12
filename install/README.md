@@ -31,4 +31,9 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 Modify the calico.yaml file as needed, then apply it:
 
-`kubectl apply -f calico.yaml`
+```
+kubectl apply -f calico.yaml
+kubectl apply -f calicoctl.yaml
+```
+
+To make execution of calicoctl easier, set up an alias in your .bashrc or .profile
