@@ -21,7 +21,10 @@ Now run the following on the control node:
 
 ```
 kubeadm config images pull
+
+# Take note of the join command that is output by init, you'll need it later
 sudo kubeadm init
+
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
@@ -37,3 +40,22 @@ kubectl apply -f calicoctl.yaml
 ```
 
 To make execution of calicoctl easier, set up an alias in your .bashrc or .profile
+
+Now is the time to execute the node join command on each of the worker nodes.  Once complete, label the worker nodes:
+`kubectl label node dell01 node-role.kubernetes.io/worker=worker`
+
+# Build spark
+
+Install R: `spark.sh`
+
+Clone the spark source repo:
+`git clone https://github.com/apache/spark.git`
+
+Then run the build: 
+`./dev/make-distribution.sh --name custom-spark --pip --r --tgz -Psparkr -Phive -Phive-thriftserver -Pmesos -Pyarn -Pkubernetes`
+
+Then run the python container build:
+`./bin/docker-image-tool.sh -t pyspark -p ./kubernetes/dockerfiles/spark/bindings/python/Dockerfile build`
+
+The run the R container build:
+`./bin/docker-image-tool.sh -t pyspark -p ./kubernetes/dockerfiles/spark/bindings/R/Dockerfile build`
