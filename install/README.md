@@ -44,6 +44,12 @@ To make execution of calicoctl easier, set up an alias in your .bashrc or .profi
 Now is the time to execute the node join command on each of the worker nodes.  Once complete, label the worker nodes:
 `kubectl label node dell01 node-role.kubernetes.io/worker=worker`
 
+# Install helm
+
+```
+helm.sh
+```
+
 # Build spark
 
 Install R: `spark.sh`
@@ -57,5 +63,5 @@ Then run the build:
 Then run the python container build:
 `./bin/docker-image-tool.sh -t pyspark -p ./kubernetes/dockerfiles/spark/bindings/python/Dockerfile build`
 
-The run the R container build:
-`./bin/docker-image-tool.sh -t pyspark -p ./kubernetes/dockerfiles/spark/bindings/R/Dockerfile build`
+# Run spark cluster
+
