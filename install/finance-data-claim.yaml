@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: finance-data-claim
 spec:
-  storageClassName: finance-data
+  storageClassName: manual
   accessModes:
     - ReadWriteMany
   resources:
