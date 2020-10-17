@@ -64,6 +64,8 @@ master:
   ##    value: -Dx=y
   ##
   # extraEnvVars:
+  extraVolumes:
+    - name: finance-data
   extraVolumeMounts:
     - name: finance-data
       mountPath: /mnt
@@ -243,6 +245,8 @@ worker:
   ## Array to add extra mounts (normally used with extraVolumes)
   ##
   ## extraVolumeMounts: {}
+  extraVolumes:
+    - name: finance-data
   extraVolumeMounts:
     - name: finance-data
       mountPath: /mnt

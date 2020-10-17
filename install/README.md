@@ -101,5 +101,13 @@ sudo gluster volume create finance-data hp01:/var/finance-data dell01:/var/finan
 sudo gluster volume start finance-data
 ```
 
-# Run spark cluster
+# Useful commands
+
+```
+# To list pods
+kubectl get pods
+
+# To get into a pod:
+kubectl exec -it spark1-master-0 -- /bin/bash
+```
 
