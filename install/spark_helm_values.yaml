@@ -64,6 +64,9 @@ master:
   ##    value: -Dx=y
   ##
   # extraEnvVars:
+  extraVolumeMounts:
+    - name: finance-data
+      mountPath: /finance-data
 
   ## Kubernetes Security Context
   ## https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -240,6 +243,9 @@ worker:
   ## Array to add extra mounts (normally used with extraVolumes)
   ##
   ## extraVolumeMounts: {}
+  extraVolumeMounts:
+    - name: finance-data
+      mountPath: /finance-data
   ## Autoscaling parameters
   ##
   autoscaling:
