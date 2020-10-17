@@ -32,6 +32,8 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 # Configure networking
 
+Update each host's /etc/hosts file with the name and IP of the other servers.
+
 Modify the calico.yaml file as needed, then apply it:
 
 ```
@@ -50,7 +52,14 @@ Now is the time to execute the node join command on each of the worker nodes.  O
 helm.sh
 ```
 
-# Build spark
+# Option 1: use bitnami
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install spark1 -f spark_helm_values.yaml bitnami/spark
+```
+
+# Option 2: Build spark
 
 Install R: `spark.sh`
 
@@ -62,6 +71,35 @@ Then run the build:
 
 Then run the python container build:
 `./bin/docker-image-tool.sh -t pyspark -p ./kubernetes/dockerfiles/spark/bindings/python/Dockerfile build`
+
+
+# Install glusterfs
+
+This must be run on each node in the cluster.
+
+```
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:gluster/glusterfs-7
+sudo apt update
+sudo apt install glusterfs-server glusterfs-client
+sudo systemctl start glusterd.service
+sudo systemctl enable glusterd.service
+```
+
+## Now configure the glusterfs storage
+
+Run this on each node in the cluster:
+```
+sudo mkdir /var/finance-data
+```
+
+Run this on only one node:
+```
+sudo gluster peer probe dell02
+sudo gluster peer probe dell01
+sudo gluster volume create finance-data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
+sudo gluster volume start finance-data
+```
 
 # Run spark cluster
 
