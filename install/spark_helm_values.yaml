@@ -66,7 +66,7 @@ master:
   # extraEnvVars:
   extraVolumeMounts:
     - name: finance-data
-      mountPath: /finance-data
+      mountPath: /mnt
 
   ## Kubernetes Security Context
   ## https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -245,7 +245,7 @@ worker:
   ## extraVolumeMounts: {}
   extraVolumeMounts:
     - name: finance-data
-      mountPath: /finance-data
+      mountPath: /mnt
   ## Autoscaling parameters
   ##
   autoscaling:
