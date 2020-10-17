@@ -46,7 +46,7 @@ master:
 
   ## Spark container ports
   ##
-  webPort: 8080
+  webPort: 8383
   clusterPort: 7077
 
   ## Set the master daemon memory limit.
