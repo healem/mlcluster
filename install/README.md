@@ -91,6 +91,7 @@ sudo systemctl enable glusterd.service
 Run this on each node in the cluster:
 ```
 sudo mkdir /var/finance-data
+sudo mkdir /var/data
 ```
 
 Run this on only one node:
@@ -99,17 +100,19 @@ sudo gluster peer probe dell02
 sudo gluster peer probe dell01
 sudo gluster volume create finance-data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
 sudo gluster volume start finance-data
-sudo gluster volume create data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
+sudo gluster volume create data hp01:/var/data dell01:/var/data dell02:/var/data
 sudo gluster volume start data
 
 kubectl create -f gluster-endpoint.yaml
 kubectl create -f gluster-service.yaml
 ```
 
-# Configure prometheus
+# Configure prometheus and grafana
 ```
 helm install prometheus bitnami/kube-prometheus
 helm install my-release bitnami/grafana
+
+kubectl apply -f grafana-pv.yaml
 ```
 
 # Useful commands
