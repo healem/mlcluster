@@ -66,6 +66,8 @@ master:
   # extraEnvVars:
   extraVolumes:
     - name: finance-data
+      persistentVolumeClaim:
+        claimName: finance-data-claim
   extraVolumeMounts:
     - name: finance-data
       mountPath: /mnt
@@ -247,6 +249,8 @@ worker:
   ## extraVolumeMounts: {}
   extraVolumes:
     - name: finance-data
+      persistentVolumeClaim:
+        claimName: finance-data-claim
   extraVolumeMounts:
     - name: finance-data
       mountPath: /mnt

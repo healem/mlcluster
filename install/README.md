@@ -110,7 +110,7 @@ kubectl create -f gluster-service.yaml
 # Configure prometheus and grafana
 ```
 helm install prometheus bitnami/kube-prometheus
-helm install my-release bitnami/grafana
+helm install grafana bitnami/grafana
 
 kubectl apply -f grafana-pv.yaml
 ```
