@@ -99,6 +99,15 @@ sudo gluster peer probe dell02
 sudo gluster peer probe dell01
 sudo gluster volume create finance-data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
 sudo gluster volume start finance-data
+sudo gluster volume create data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
+sudo gluster volume start data
+
+```
+
+# Configure prometheus
+```
+helm install prometheus bitnami/kube-prometheus
+helm install my-release bitnami/grafana
 ```
 
 # Useful commands
@@ -109,5 +118,8 @@ kubectl get pods
 
 # To get into a pod:
 kubectl exec -it spark1-master-0 -- /bin/bash
+
+# Search for prometheus helm charts
+helm search repo prometheus-community
 ```
 
