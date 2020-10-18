@@ -102,6 +102,8 @@ sudo gluster volume start finance-data
 sudo gluster volume create data hp01:/var/finance-data dell01:/var/finance-data dell02:/var/finance-data
 sudo gluster volume start data
 
+kubectl create -f gluster-endpoint.yaml
+kubectl create -f gluster-service.yaml
 ```
 
 # Configure prometheus
