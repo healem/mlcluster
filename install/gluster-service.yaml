@@ -2,7 +2,7 @@
 kind: Service
 apiVersion: v1
 metadata:
- name: glusterfs-cluster
+  name: glusterfs-cluster
 spec:
- ports:
- - port: 1729
+  ports:
+    - port: 1729
