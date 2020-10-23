@@ -108,12 +108,38 @@ kubectl create -f gluster-service.yaml
 ```
 
 # Configure prometheus and grafana
-```
-helm install prometheus bitnami/kube-prometheus
-helm install grafana bitnami/grafana
 
-kubectl apply -f grafana-pv.yaml
+Or just install via Lens settings for the cluster.
 ```
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_prometheusrules.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/release-0.42/example/prometheus-operator-crd/monitoring.coreos.com_probes.yaml
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+helm repo update
+helm install prometheus-stak --set prometheusOperator.createCustomResource=false prometheus-community/kube-prometheus-stack
+```
+
+# Mount the glusterfs volume on host
+
+This is needed if you want to run things directly on the host to access the gluster volume.
+
+```
+sudo modprobe fuse
+
+# Add the following to /etc/fstab
+# glusterfs finance-data volume mount
+hp01:/finance-data /finance-data glusterfs defaults,_netdev 0 0
+
+sudo mount -a
+```
+
+
 
 # Useful commands
 
