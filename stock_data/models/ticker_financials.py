@@ -3,7 +3,7 @@
 #
 from dataclasses import dataclass
 
-from .model import Model
+from stock_data.models.model import Model
 
 
 @dataclass

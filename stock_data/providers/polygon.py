@@ -6,11 +6,14 @@ import os
 
 from datetime import datetime
 
-from ..models.candle import Candle
-from ..models.ticker import Ticker
-from ..models.ticker_detail import TickerDetail
-from ..models.ticker_financials import TickerFinancials
-from .provider import Provider
+from stock_data.models.candle import Candle
+from stock_data.models.ticker import Ticker
+from stock_data.models.ticker_detail import TickerDetail
+from stock_data.models.ticker_financials import TickerFinancials
+from stock_data.models.ticker_news import TickerNews
+from stock_data.providers.provider import Provider
+from stock_data.utils import get_datetime_from_basic
+from stock_data.utils import get_datetime_from_iso
 
 
 class Polygon(Provider):
@@ -135,9 +138,52 @@ class Polygon(Provider):
 
     # ################## Get NEWS
     def get_ticker_news(self, ticker, start_date, end_date):
-        # Get news for the ticker
+        start = get_datetime_from_basic(start_date)
+        end = get_datetime_from_basic(end_date)
+        news = []
+        done = False
+        page = 1
+        while not done:
+            try:
+                items = self._get_ticker_news_raw_page(ticker, page)
+            except Exception:
+                break
+
+            for item in items:
+                this = get_datetime_from_iso(item.get("timestamp"))
+
+                # See if article is in the time window desired
+                if this < start:
+                    continue
+                elif this > end:
+                    done = True
+                    break
+                else:
+                    news.append(self._process_news(ticker, item))
+
+            if done:
+                break
+            else:
+                page += 1
+
+        return news
+
+    @staticmethod
+    def _process_news(ticker, news_item):
+        return TickerNews(
+            ticker=ticker,
+            title=news_item.get("title"),
+            source=news_item.get("source"),
+            summary=news_item.get("summary"),
+            timestamp=news_item.get("timestamp"),
+            url=news_item.get("url"),
+            related_tickers=news_item.get("symbols"),
+            keywords=news_item.get("keywords")
+        )
+
+    def _get_ticker_news_raw_page(self, ticker, page=1):
         endpoint = f"v1/meta/symbols/{ticker}/news"
-        return self._call_polygon(endpoint)
+        return self._call_polygon(endpoint, params=dict(perpage=50, page=page))
 
     # ################### Call polygon
     def _call_polygon(self, endpoint, params=None):

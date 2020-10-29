@@ -1,4 +1,6 @@
-import json
+# Copyright (C) 2020 Mike Healey
+# All rights reserved
+#
 import logging
 import os
 import pandas
