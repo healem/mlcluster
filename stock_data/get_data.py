@@ -10,20 +10,16 @@ from pathlib import Path
 from shutil import rmtree
 
 from stock_data.providers.polygon import Polygon
-from stock_data.sertializers.parquet import Parquet
+from stock_data.serializers.parquet import Parquet
 from stock_data.serializers.stdout import Stdout
 
-
+# ***********************
+#
 # Get the grouped daily for the whole US market for the first and last day of the month to analyze
 # find all stocks that start and end under $10
+#
+# ***********************
 
-# Get the following for the above stock:
-# monthly aggregates of 1 min for the year
-# stock financials, specifically for the float
-# ticker news
-# ticker details
-
-# save to parquet file in gluster
 
 logging.basicConfig(level=logging.DEBUG)
 
