@@ -104,7 +104,7 @@ class Polygon(Provider):
         return self._process_ticker_details(details, financials)
 
     def _process_ticker_details(self, details, financials):
-        fr = financials.get("results", {})
+        fr = financials.get("results", [])[-1]
         fin = TickerFinancials(
             assets=fr.get("assets"),
             cash=fr.get("cashAndEquivalentsUSD"),
