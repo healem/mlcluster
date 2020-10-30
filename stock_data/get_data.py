@@ -4,15 +4,14 @@
 import argparse
 import logging
 import os
-import pandas
-import pprint
-import requests
 from datetime import datetime
 from datetime import timedelta
 from pathlib import Path
 from shutil import rmtree
 
 from stock_data.providers.polygon import Polygon
+from stock_data.sertializers.parquet import Parquet
+from stock_data.serializers.stdout import Stdout
 
 
 # Get the grouped daily for the whole US market for the first and last day of the month to analyze
@@ -32,21 +31,18 @@ basedir = "/tmp/results"
 minute_dir = "minute"
 ticker_dir = "tickers"
 news_dir = "news"
-baseurl = "https://api.polygon.io"
 key = os.environ.get("POLYGON_KEY")
 poly = Polygon(key)
-session = requests.Session()
-session.params["apiKey"] = key
 
 
-def create_skeleton():
+def create_skeleton(base):
     for subdir in [minute_dir, ticker_dir, news_dir]:
-        path = Path(f"{basedir}/{subdir}")
+        path = Path(f"{base}/{subdir}")
         path.mkdir(parents=True, exist_ok=True)
 
 
-def delete_skeleton():
-    rmtree(basedir)
+def delete_skeleton(base):
+    rmtree(base)
 
 
 def get_candles(ticker, start, end):
@@ -75,16 +71,6 @@ def get_week_end(week_start):
     return f"{end.year}-{end.month}-{end.day}"
 
 
-def read_parquet(target_file):
-    df = pandas.read_parquet(target_file)
-    return df
-
-
-def write_parquet(input_json, target_file):
-    df = pandas.read_json(input_json)
-    df.to_parquet(target_file)
-
-
 def parse_args():
     parser = argparse.ArgumentParser(description="Stock data fetcher")
     parser.add_argument(
@@ -93,6 +79,13 @@ def parse_args():
         action="store_true",
         default=False,
         help="Get candles, details, and news for the ticker",
+    )
+    parser.add_argument(
+        "--basedir",
+        "-b",
+        action="store",
+        default=basedir,
+        help="Top-level of the directory to save the data to",
     )
     parser.add_argument(
         "--candles",
@@ -123,6 +116,14 @@ def parse_args():
         help="Get news for the ticker",
     )
     parser.add_argument(
+        "--out",
+        "-o",
+        action="store",
+        choices=["parquet", "stdout"],
+        default="stdout",
+        help="How to output the data",
+    )
+    parser.add_argument(
         "--start",
         "-s",
         action="store",
@@ -147,15 +148,22 @@ def parse_args():
 
 
 def main(args):
+    if args.out == "parquet":
+        location = args.basedir
+        serializer = Parquet()
+    else:
+        location = None
+        serializer = Stdout()
+
     if args.ticker:
         if args.details:
-            pprint.pprint(get_details(args.ticker))
+            serializer.write(get_details(args.ticker), location)
 
         if args.candles:
-            pprint.pprint(get_candles(args.ticker, args.start, args.end))
+            serializer.write(get_candles(args.ticker, args.start, args.end), location)
 
         if args.news:
-            pprint.pprint(get_news(args.ticker, args.start, args.end))
+            serializer.write(get_news(args.ticker, args.start, args.end), location)
 
 
 if __name__ == "__main__":
