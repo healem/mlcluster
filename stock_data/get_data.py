@@ -27,6 +27,7 @@ basedir = "/tmp/results"
 minute_dir = "minute"
 ticker_dir = "tickers"
 news_dir = "news"
+summary_dir = "summary"
 key = os.environ.get("POLYGON_KEY")
 poly = Polygon(key)
 
@@ -172,20 +173,34 @@ def main(args):
     if args.summary:
         s = get_summary(args.summary)
         print(f"Summary has {len(s)} tickers")
-        serializer.write(s)
+        serializer.write(get_summary(args.summary), f"{location}/{summary_dir}/{args.summary}")
 
     if args.list_tickers:
-        serializer.write(get_tickers())
+        serializer.write(get_tickers(), location)
 
     if args.ticker:
         if args.details:
-            serializer.write(get_details(args.ticker), location)
+            serializer.write(get_details(args.ticker), f"{location}/{ticker_dir}/{args.ticker}")
 
         if args.candles:
-            serializer.write(get_candles(args.ticker, args.start, args.end), location)
+            serializer.write(
+                get_candles(
+                    args.ticker,
+                    args.start, 
+                    args.end
+                ),
+                f"{location}/{minute_dir}/{args.ticker}"
+            )
 
         if args.news:
-            serializer.write(get_news(args.ticker, args.start, args.end), location)
+            serializer.write(
+                get_news(
+                    args.ticker,
+                    args.start,
+                    args.end
+                ),
+                f"{location}/{news_dir}/{args.ticker}/{args.start}_{args.end}"
+            )
 
 
 if __name__ == "__main__":
