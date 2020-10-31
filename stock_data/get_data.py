@@ -170,7 +170,9 @@ def main(args):
         serializer = Stdout()
 
     if args.summary:
-        serializer.write(get_summary(args.summary))
+        s = get_summary(args.summary)
+        print(f"Summary has {len(s)} tickers")
+        serializer.write(s)
 
     if args.list_tickers:
         serializer.write(get_tickers())
