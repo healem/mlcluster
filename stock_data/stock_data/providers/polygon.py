@@ -33,7 +33,7 @@ class Polygon(Provider):
     @staticmethod
     def _process_all_tickers(tickers_raw):
         tickers = []
-        for t in tickers_raw:
+        for t in tickers_raw.get("tickers"):
             tickers.append(
                 Ticker(
                     active=t.get("active"),
@@ -55,12 +55,12 @@ class Polygon(Provider):
         tickers = []
         results = self._get_all_day_raw(day, locale, market)
         for ticker in results.get("results"):
-            tickers.append(self._process_candle(ticker.get("T"), ticker))
+            tickers.append(self._process_candle(ticker.get("T"), ticker, "day"))
 
         return tickers
 
     def _get_all_day_raw(self, day, locale, market):
-        endpoint = f"{self.url}/v2/aggs/grouped/locale/{locale}/market/{market}/{day}"
+        endpoint = f"v2/aggs/grouped/locale/{locale}/market/{market}/{day}"
         return self._call_polygon(endpoint)
 
     # ###############  Get MINUTE aggregate
@@ -81,11 +81,11 @@ class Polygon(Provider):
         return candles
 
     @staticmethod
-    def _process_candle(ticker, candle):
+    def _process_candle(ticker, candle, period="minute"):
         dt = datetime.fromtimestamp(int(candle.get("t")) / 1000.0)
         candle = Candle(
                 ticker=ticker,
-                period="minute",
+                period=period,
                 year=dt.year,
                 month=dt.month,
                 day=dt.day,
