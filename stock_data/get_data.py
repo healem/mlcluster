@@ -107,6 +107,11 @@ def parse_args():
         help="Get details for the ticker",
     )
     parser.add_argument(
+        "--dump",
+        action="store",
+        help="Dump the specified file of type specified in --out",
+    )
+    parser.add_argument(
         "--end",
         "-e",
         action="store",
@@ -169,6 +174,9 @@ def main(args):
     else:
         location = None
         serializer = Stdout()
+
+    if args.dump:
+        print(serializer.read(args.dump))
 
     if args.summary:
         s = get_summary(args.summary)
