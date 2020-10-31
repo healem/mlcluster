@@ -53,6 +53,14 @@ def get_news(ticker, start, end):
     return poly.get_ticker_news(ticker, start, end)
 
 
+def get_summary(day):
+    return poly.get_all_day(day)
+
+
+def get_tickers():
+    return poly.get_all_tickers()
+
+
 def get_next_day(start_day):
     # Expects format year-month-day: 2019-02-20
     year, month, day = start_day.split("-")
@@ -101,8 +109,14 @@ def parse_args():
         "--end",
         "-e",
         action="store",
-        required=True,
         help="The end date for ticker candle data",
+    )
+    parser.add_argument(
+        "--list_tickers",
+        "-lt",
+        action="store_true",
+        default=False,
+        help="List all tickers",
     )
     parser.add_argument(
         "--news",
@@ -123,8 +137,12 @@ def parse_args():
         "--start",
         "-s",
         action="store",
-        required=True,
         help="The start date for ticker candle data",
+    )
+    parser.add_argument(
+        "--summary",
+        action="store",
+        help="Get summary for all tickers in market for specified day",
     )
     parser.add_argument(
         "--ticker",
@@ -150,6 +168,12 @@ def main(args):
     else:
         location = None
         serializer = Stdout()
+
+    if args.summary:
+        serializer.write(get_summary(args.summary))
+
+    if args.list_tickers:
+        serializer.write(get_tickers())
 
     if args.ticker:
         if args.details:

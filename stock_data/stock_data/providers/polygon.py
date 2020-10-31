@@ -50,6 +50,19 @@ class Polygon(Provider):
         endpoint = f"v2/reference/tickers"
         return self._call_polygon(endpoint, dict(locale=locale, market=market))
 
+    # ############## Get OHLC for whole market day
+    def get_all_day(self, day, locale="us", market="stocks"):
+        tickers = []
+        results = self._get_all_day_raw(day, locale, market)
+        for ticker in results.get("results"):
+            tickers.append(self._process_candle(ticker.get("T"), ticker))
+
+        return tickers
+
+    def _get_all_day_raw(self, day, locale, market):
+        endpoint = f"{self.url}/v2/aggs/grouped/locale/{locale}/market/{market}/{day}"
+        return self._call_polygon(endpoint)
+
     # ###############  Get MINUTE aggregate
     def get_minute_aggregate(self, ticker, start_date, end_date):
         # Get the minute OCHLV for the specified ticker and date range
@@ -57,35 +70,37 @@ class Polygon(Provider):
             self._get_minute_aggregate_raw(ticker, start_date, end_date)
         )
 
-    @staticmethod
-    def _process_minute_aggregate(agg):
+    def _process_minute_aggregate(self, agg):
         candles = []
         logging.info(
             f"Processing {agg.get('resultsCount')} for ticker {agg.get('ticker')}"
         )
         for candle in agg["results"]:
-            dt = datetime.fromtimestamp(int(candle.get("t")) / 1000.0)
-            candles.append(
-                Candle(
-                    ticker=agg.get("ticker"),
-                    period="minute",
-                    year=dt.year,
-                    month=dt.month,
-                    day=dt.day,
-                    hour=dt.hour,
-                    minute=dt.minute,
-                    day_name=dt.strftime("%A"),
-                    open=candle.get("o"),
-                    close=candle.get("c"),
-                    high=candle.get("h"),
-                    low=candle.get("l"),
-                    volume=candle.get("v"),
-                    number=candle.get("n"),
-                    vw=candle.get("vw"),
-                )
-            )
+            candles.append(self._process_candle(agg.get("ticker"), candle))
 
         return candles
+
+    @staticmethod
+    def _process_candle(ticker, candle):
+        dt = datetime.fromtimestamp(int(candle.get("t")) / 1000.0)
+        candle = Candle(
+                ticker=ticker,
+                period="minute",
+                year=dt.year,
+                month=dt.month,
+                day=dt.day,
+                hour=dt.hour,
+                minute=dt.minute,
+                day_name=dt.strftime("%A"),
+                open=candle.get("o"),
+                close=candle.get("c"),
+                high=candle.get("h"),
+                low=candle.get("l"),
+                volume=candle.get("v"),
+                number=candle.get("n"),
+                vw=candle.get("vw"),
+            )
+        return candle
 
     def _get_minute_aggregate_raw(self, ticker, start_date, end_date):
         endpoint = f"v2/aggs/ticker/{ticker}/range/1/minute/{start_date}/{end_date}"
