@@ -57,6 +57,7 @@ helm.sh
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm install spark1 -f spark_helm_values.yaml bitnami/spark
+kubectl port-forward --namespace default svc/spark1-master-svc 80:80
 ```
 
 # Option 2: Build spark
