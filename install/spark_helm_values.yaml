@@ -306,7 +306,7 @@ service:
   ## Web Service port
   ##
   webPort: 8080
-  nodePort: 8080
+  nodePort: 30001
 
   ## Specify the nodePort(s) value(s) for the LoadBalancer and NodePort service types.
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
